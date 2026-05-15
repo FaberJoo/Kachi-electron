@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate (Node + pnpm)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify Electron package
+        run: node -e "const p=require('electron/package.json'); console.log('electron', p.version)"
+
+      - name: Verify project entrypoints
+        run: |
+          test -f main.js
+          test -f preload.js
+          test -f renderer.js
+          test -f index.html
