@@ -18,6 +18,15 @@ pnpm install
 pnpm dev
 ```
 
+## Dev Tooling
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm test:e2e
+```
+
 ## Build Installers
 
 ```bash

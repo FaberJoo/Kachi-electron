@@ -10,10 +10,12 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "dev": "electron .",
+    "dev": "concurrently -k \"pnpm dev:web\" \"pnpm dev:electron\"",
     "start": "electron .",
     "dev:web": "vite",
+    "dev:electron": "wait-on tcp:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
     "build:web": "vite build",
+    "build": "pnpm build:web",
     "preview:web": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -22,10 +24,10 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "dist:mac": "electron-builder --mac dmg",
-    "dist:win": "electron-builder --win nsis",
-    "dist:linux": "electron-builder --linux AppImage deb"
+    "dist": "pnpm build:web && electron-builder",
+    "dist:mac": "pnpm build:web && electron-builder --mac dmg",
+    "dist:win": "pnpm build:web && electron-builder --win nsis",
+    "dist:linux": "pnpm build:web && electron-builder --linux AppImage deb"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.17.6",
@@ -54,6 +56,8 @@
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "@typescript-eslint/parser": "^8.42.0",
     "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^9.0.1",
+    "cross-env": "^7.0.3",
     "electron": "^33.2.1",
     "electron-builder": "^24.13.3",
     "eslint": "^9.34.0",
@@ -62,7 +66,9 @@
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "vite": "^7.1.2",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wait-on": "^8.0.1",
+    "jsdom": "^24.1.3"
   },
   "build": {
     "appId": "com.kachi.app",
@@ -73,8 +79,6 @@
     "files": [
       "main.js",
       "preload.js",
-      "renderer.js",
-      "index.html",
       "dist/**",
       "package.json"
     ],

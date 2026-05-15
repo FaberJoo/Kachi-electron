@@ -3,14 +3,25 @@ const path = require('path');
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 1280,
+    height: 840,
+    minWidth: 980,
+    minHeight: 640,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false
     }
   });
 
-  mainWindow.loadFile('index.html');
+  const devServerURL = process.env.VITE_DEV_SERVER_URL;
+
+  if (devServerURL) {
+    mainWindow.loadURL(devServerURL);
+    return;
+  }
+
+  mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
 }
 
 app.whenReady().then(() => {
